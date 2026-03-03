@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ビンゴ番号コール</title>
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #060816;
+      --bg-panel: #101427;
+      --accent: #e94560;
+      --accent-soft: #ff6b6b;
+      --gold: #f4d03f;
+      --text: #f0f0f0;
+      --muted: #9fa4b8;
+      --called: #1f4068;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Zen Kaku Gothic New', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: radial-gradient(circle at top, #1b2644 0, #060816 55%, #02030a 100%);
+      min-height: 100vh;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.5rem;
+    }
+
+    .wrap {
+      width: 100%;
+      max-width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    header {
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: clamp(2.2rem, 3vw + 1rem, 3rem);
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      margin-bottom: 0.3rem;
+      background: linear-gradient(135deg, var(--accent-soft), var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    header p {
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 2.2fr) minmax(0, 1.3fr);
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 800px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      background: rgba(5, 8, 24, 0.92);
+      border-radius: 1.25rem;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.7);
+      padding: 1.5rem 1.75rem;
+    }
+
+    .current-number-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .current-label {
+      font-size: 0.9rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .current-display {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      width: 100%;
+    }
+
+    .current-letter {
+      width: clamp(100px, 12vw, 150px);
+      height: clamp(100px, 12vw, 150px);
+      border-radius: 50%;
+      border: 6px solid #b45309;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(2.8rem, 5vw, 3.8rem);
+      font-weight: 900;
+      color: #000000;
+      background: #fef08a;
+      box-shadow: 0 0 0 4px #000, 0 0 24px rgba(254, 240, 138, 0.8);
+    }
+
+    .current-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .current-number {
+      font-size: clamp(7rem, 18vw, 11rem);
+      font-weight: 900;
+      letter-spacing: 0.02em;
+      line-height: 1;
+      padding: 0.2em 0.5em;
+      border-radius: 0.6em;
+      background: #ffffff;
+      border: 10px solid #000000;
+      text-align: center;
+      color: #000000;
+      box-shadow: 0 0 0 8px #fff, 0 0 40px rgba(255, 255, 255, 0.5);
+      text-shadow: none;
+      min-width: 1.9em;
+    }
+
+    .current-sub {
+      font-size: clamp(1.4rem, 2.5vw, 1.9rem);
+      font-weight: 700;
+      color: #fef08a;
+      text-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    .info-row span strong {
+      color: var(--text);
+    }
+
+    .controls {
+      margin-top: 1.2rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: center;
+    }
+
+    button {
+      font-family: inherit;
+      font-size: 1rem;
+      padding: 0.7rem 1.4rem;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease, opacity 0.12s ease;
+      white-space: nowrap;
+    }
+
+    button:disabled {
+      opacity: 0.45;
+      cursor: default;
+      box-shadow: none;
+      transform: none;
+    }
+
+    button:not(:disabled):hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.45);
+    }
+
+    .btn-main {
+      background: linear-gradient(135deg, var(--accent), var(--accent-soft));
+      color: #fff;
+    }
+
+    .btn-sub {
+      background: #17213a;
+      color: var(--gold);
+      border: 1px solid rgba(244, 208, 63, 0.6);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid rgba(159, 164, 184, 0.5);
+    }
+
+    .options-row {
+      margin-top: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      align-items: center;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .options-row label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      cursor: pointer;
+    }
+
+    .options-row input[type="checkbox"],
+    .options-row input[type="radio"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+    }
+
+    .interval-options span {
+      margin-left: 0.35rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* 右側：履歴・一覧 */
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .history-header strong {
+      color: var(--text);
+      letter-spacing: 0.1em;
+    }
+
+    .recent-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      margin-bottom: 1.1rem;
+      min-height: 2.6rem;
+    }
+
+    .recent-chip {
+      padding: 0.55rem 1.25rem;
+      border-radius: 999px;
+      background: #fef08a;
+      font-size: 1.35rem;
+      font-weight: 900;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #000000;
+      border: 3px solid #b45309;
+      box-shadow: 0 0 0 2px #000, 0 0 16px rgba(254, 240, 138, 0.6);
+    }
+
+    .recent-chip span {
+      font-weight: 900;
+      font-size: 1.15em;
+      color: #b91c1c;
+    }
+
+    .grid-75 {
+      display: grid;
+      grid-template-columns: repeat(10, minmax(0, 1fr));
+      gap: 0.4rem;
+      font-size: 1.25rem;
+    }
+
+    @media (max-width: 800px) {
+      .grid-75 {
+        grid-template-columns: repeat(8, minmax(0, 1fr));
+        font-size: 1.1rem;
+      }
+    }
+
+    .num-cell {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0.5rem;
+      background: #111827;
+      color: #e5e7eb;
+      border: 3px solid rgba(229, 231, 235, 0.4);
+      font-weight: 900;
+    }
+
+    .num-cell:empty {
+      background: rgba(17, 24, 39, 0.6);
+      border: 2px dashed rgba(229, 231, 235, 0.2);
+    }
+
+    .num-cell.called {
+      background: #fef08a;
+      color: #000000;
+      font-weight: 900;
+      font-size: 1.15em;
+      border: 4px solid #b45309;
+      box-shadow: 0 0 0 2px #000, 0 0 12px rgba(254, 240, 138, 0.5);
+    }
+
+    .num-cell.current {
+      background: #f97316;
+      color: #ffffff;
+      font-weight: 900;
+      font-size: 1.25em;
+      border: 5px solid #ea580c;
+      box-shadow: 0 0 0 3px #fff, 0 0 24px rgba(249, 115, 22, 0.9);
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>ビンゴ番号コール</h1>
+      <p>老人デイサービス・イベント向け｜画面を大きく表示してお使いください（F11 で全画面）</p>
+    </header>
+
+    <div class="layout">
+      <!-- 左：現在の番号と操作 -->
+      <section class="panel">
+        <div class="current-number-area">
+          <div class="current-label">現在の番号</div>
+          <div class="current-display">
+            <div class="current-letter" id="currentLetter">-</div>
+            <div class="current-main">
+              <div class="current-number" id="currentNumber">--</div>
+              <div class="current-sub" id="currentSub">まだ始まっていません</div>
+            </div>
+          </div>
+          <div class="info-row">
+            <span>出た数：<strong id="countInfo">0 / 75</strong></span>
+            <span>残り：<strong id="remainInfo">75</strong></span>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button class="btn-main" id="nextBtn">次の番号</button>
+          <button class="btn-sub" id="autoStartBtn">自動スタート</button>
+          <button class="btn-ghost" id="autoStopBtn" disabled>停止</button>
+          <button class="btn-ghost" id="resetBtn">最初から</button>
+        </div>
+
+        <div class="options-row">
+          <label>
+            <input type="checkbox" id="voiceToggle" checked>
+            音声で読み上げる
+          </label>
+          <div class="interval-options">
+            間隔：
+            <label><input type="radio" name="interval" value="3" checked> 3秒</label>
+            <label><input type="radio" name="interval" value="5"> 5秒</label>
+            <label><input type="radio" name="interval" value="8"> 8秒</label>
+            <label><input type="radio" name="interval" value="10"> 10秒</label>
+            <span>（自動コール時）</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 右：履歴と全体 -->
+      <section class="panel">
+        <div class="history-header">
+          <div><strong>最近出た番号</strong></div>
+          <div id="lastLetterInfo">B: 1〜15 / I: 16〜30 / N: 31〜45 / G: 46〜60 / O: 61〜75</div>
+        </div>
+        <div class="recent-list" id="recentList"></div>
+        <div class="grid-75" id="grid75"></div>
+      </section>
+    </div>
+
+    <footer>
+      画面の明るさ・音量を調整して、ご利用者さまが見やすい・聞き取りやすい環境でお使いください。
+    </footer>
+  </div>
+
+  <script>
+    const allNumbers = Array.from({ length: 75 }, (_, i) => i + 1);
+    let remaining = [];
+    let called = [];
+    let current = null;
+    let autoTimer = null;
+
+    const currentLetterEl = document.getElementById('currentLetter');
+    const currentNumberEl = document.getElementById('currentNumber');
+    const currentSubEl = document.getElementById('currentSub');
+    const countInfoEl = document.getElementById('countInfo');
+    const remainInfoEl = document.getElementById('remainInfo');
+    const recentListEl = document.getElementById('recentList');
+    const grid75El = document.getElementById('grid75');
+
+    const nextBtn = document.getElementById('nextBtn');
+    const autoStartBtn = document.getElementById('autoStartBtn');
+    const autoStopBtn = document.getElementById('autoStopBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const voiceToggle = document.getElementById('voiceToggle');
+
+    function getLetter(num) {
+      if (num >= 1 && num <= 15) return 'B';
+      if (num >= 16 && num <= 30) return 'I';
+      if (num >= 31 && num <= 45) return 'N';
+      if (num >= 46 && num <= 60) return 'G';
+      return 'O';
+    }
+
+    function speakNumber(num) {
+      if (!('speechSynthesis' in window)) return;
+      if (!voiceToggle.checked) return;
+      try {
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(num + '番');
+        const voices = window.speechSynthesis.getVoices();
+        const ja = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('ja'));
+        if (ja) u.voice = ja;
+        u.lang = 'ja-JP';
+        u.rate = 0.9;
+        u.pitch = 1.0;
+        window.speechSynthesis.speak(u);
+      } catch (e) {
+        // ignore
+      }
+    }
+
+    function shuffle(arr) {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function updateInfo() {
+      countInfoEl.textContent = called.length + ' / 75';
+      remainInfoEl.textContent = 75 - called.length;
+    }
+
+    function updateCurrentDisplay() {
+      if (!current) {
+        currentLetterEl.textContent = '-';
+        currentNumberEl.textContent = '--';
+        currentSubEl.textContent = '「次の番号」ボタンを押して始めてください';
+        return;
+      }
+      const letter = getLetter(current);
+      currentLetterEl.textContent = letter;
+      currentNumberEl.textContent = String(current).padStart(2, ' ');
+      currentSubEl.textContent = letter + ' の ' + current + '番';
+    }
+
+    function updateRecentList() {
+      recentListEl.innerHTML = '';
+      const last = called.slice(-10).reverse();
+      for (const n of last) {
+        const chip = document.createElement('div');
+        chip.className = 'recent-chip';
+        const letter = getLetter(n);
+        chip.innerHTML = '<span>' + letter + '</span>' + n + '番';
+        recentListEl.appendChild(chip);
+      }
+    }
+
+    function buildGrid() {
+      grid75El.innerHTML = '';
+      for (let n = 1; n <= 75; n++) {
+        const cell = document.createElement('div');
+        cell.className = 'num-cell';
+        cell.dataset.num = n;
+        cell.textContent = '';  // 最初は空白
+        grid75El.appendChild(cell);
+      }
+    }
+
+    function updateGridHighlight() {
+      const cells = grid75El.querySelectorAll('.num-cell');
+      cells.forEach(cell => {
+        const n = Number(cell.dataset.num);
+        const isCalled = called.includes(n);
+        cell.textContent = isCalled ? n : '';  // コールされた番号だけ表示
+        cell.classList.toggle('called', isCalled);
+        cell.classList.toggle('current', current === n);
+      });
+    }
+
+    function drawNext() {
+      if (remaining.length === 0) {
+        currentSubEl.textContent = 'すべての番号が出ました';
+        nextBtn.disabled = true;
+        autoStartBtn.disabled = true;
+        return;
+      }
+      const idx = Math.floor(Math.random() * remaining.length);
+      const num = remaining.splice(idx, 1)[0];
+      called.push(num);
+      current = num;
+      updateInfo();
+      updateCurrentDisplay();
+      updateRecentList();
+      updateGridHighlight();
+      speakNumber(num);
+    }
+
+    function startAuto() {
+      if (autoTimer || remaining.length === 0) return;
+      const intervalRadios = document.querySelectorAll('input[name="interval"]');
+      let sec = 5;
+      intervalRadios.forEach(r => {
+        if (r.checked) sec = Number(r.value) || 5;
+      });
+      drawNext();
+      autoTimer = setInterval(() => {
+        if (remaining.length === 0) {
+          stopAuto();
+          return;
+        }
+        drawNext();
+      }, sec * 1000);
+      autoStartBtn.disabled = true;
+      nextBtn.disabled = true;
+      autoStopBtn.disabled = false;
+    }
+
+    function stopAuto() {
+      if (!autoTimer) return;
+      clearInterval(autoTimer);
+      autoTimer = null;
+      autoStartBtn.disabled = remaining.length === 0;
+      nextBtn.disabled = remaining.length === 0;
+      autoStopBtn.disabled = true;
+    }
+
+    function resetAll() {
+      stopAuto();
+      remaining = shuffle(allNumbers);
+      called = [];
+      current = null;
+      updateInfo();
+      updateCurrentDisplay();
+      updateRecentList();
+      updateGridHighlight();
+      nextBtn.disabled = false;
+      autoStartBtn.disabled = false;
+      autoStopBtn.disabled = true;
+    }
+
+    nextBtn.addEventListener('click', () => {
+      drawNext();
+    });
+
+    autoStartBtn.addEventListener('click', () => {
+      startAuto();
+    });
+
+    autoStopBtn.addEventListener('click', () => {
+      stopAuto();
+    });
+
+    resetBtn.addEventListener('click', () => {
+      resetAll();
+    });
+
+    // 初期化
+    buildGrid();
+    resetAll();
+
+    // 一部ブラウザでは、音声合成のボイス一覧が非同期で読み込まれるため、
+    // ここで一度取得しておく
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.onvoiceschanged = () => {
+        window.speechSynthesis.getVoices();
+      };
+    }
+  </script>
+</body>
+</html>
+
