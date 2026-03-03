@@ -798,7 +798,9 @@
       if (!voiceToggle.checked) return;
       try {
         window.speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance(num + '番');
+        // 利用者さまが聞き取りやすいよう、番号だけをシンプルに読む
+        const text = `${num}番`;
+        const u = new SpeechSynthesisUtterance(text);
         const voices = window.speechSynthesis.getVoices();
         const ja = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('ja'));
         if (ja) u.voice = ja;
