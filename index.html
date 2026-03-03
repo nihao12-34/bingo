@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ビンゴ番号コール</title>
+  <title>れんげの家ビンゴ大会</title>
   <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -99,9 +99,10 @@
     .current-display {
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 1.5rem;
+      justify-content: flex-start;
+      gap: 1.2rem;
       width: 100%;
+      flex-wrap: wrap;
     }
 
     .current-letter {
@@ -120,7 +121,7 @@
     }
 
     .current-main {
-      flex: 1;
+      flex: 0 0 auto;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -142,6 +143,41 @@
       box-shadow: 0 0 0 8px #fff, 0 0 40px rgba(255, 255, 255, 0.5);
       text-shadow: none;
       min-width: 1.9em;
+    }
+
+    .side-encourage {
+      flex: 1 1 380px;
+      min-height: 170px;
+      padding: 1.1rem 1.2rem;
+      border-radius: 1.25rem;
+      background: rgba(2, 6, 23, 0.92);
+      border: 3px solid rgba(254, 240, 138, 0.8);
+      box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.7);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0.6rem;
+    }
+
+    .side-encourage-name {
+      font-size: clamp(1.8rem, 2.8vw, 2.4rem);
+      font-weight: 900;
+      color: #fef08a;
+      text-shadow: 0 0 14px rgba(254, 240, 138, 0.6);
+    }
+
+    .side-encourage-text {
+      font-size: clamp(1.25rem, 2.1vw, 1.7rem);
+      font-weight: 800;
+      line-height: 1.6;
+      color: #ffffff;
+    }
+
+    .side-encourage-hint {
+      margin-top: 0.1rem;
+      font-size: 0.9rem;
+      color: #cbd5e1;
+      opacity: 0.9;
     }
 
     .current-sub {
@@ -248,6 +284,26 @@
       color: var(--muted);
     }
 
+    .interval-options input[type="number"] {
+      width: 6.5em;
+      padding: 0.25rem 0.45rem;
+      margin-left: 0.4rem;
+      border-radius: 0.6rem;
+      border: 2px solid rgba(229, 231, 235, 0.35);
+      background: #020617;
+      color: #e5e7eb;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 800;
+    }
+
+    .interval-options .unit {
+      margin-left: 0.25rem;
+      margin-right: 0.5rem;
+      color: #e5e7eb;
+      font-weight: 700;
+    }
+
     /* 右側：履歴・一覧 */
     .history-header {
       display: flex;
@@ -340,6 +396,181 @@
       box-shadow: 0 0 0 3px #fff, 0 0 24px rgba(249, 115, 22, 0.9);
     }
 
+    /* 利用者さまメッセージエリア */
+    .names-panel {
+      margin-top: 1rem;
+      padding: 1rem 1.25rem;
+      border-radius: 1rem;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .names-panel-title {
+      font-size: 0.95rem;
+      color: #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .names-panel-title span {
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+
+    .names-panel-title small {
+      font-size: 0.8rem;
+      color: #9ca3af;
+    }
+
+    .names-row {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .names-row textarea {
+      flex: 1 1 260px;
+      min-height: 80px;
+      max-height: 130px;
+      resize: vertical;
+      border-radius: 0.75rem;
+      border: 1px solid rgba(148, 163, 184, 0.9);
+      padding: 0.6rem 0.75rem;
+      background: #020617;
+      color: #e5e7eb;
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+
+    .names-row textarea::placeholder {
+      color: #6b7280;
+    }
+
+    .names-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      min-width: 180px;
+    }
+
+    .names-info {
+      font-size: 0.8rem;
+      color: #9ca3af;
+    }
+
+    .btn-small {
+      padding: 0.45rem 1rem;
+      font-size: 0.85rem;
+    }
+
+    .btn-positive {
+      background: linear-gradient(135deg, #16a34a, #22c55e);
+      color: #f9fafb;
+      border: none;
+    }
+
+    /* メッセージ表示用オーバーレイ */
+    .message-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.9);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+    }
+
+    .message-overlay.active {
+      display: flex;
+    }
+
+    .message-box {
+      max-width: 900px;
+      width: 90%;
+      background: #020617;
+      border-radius: 1.5rem;
+      border: 4px solid #fbbf24;
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.9);
+      padding: 1.8rem 1.5rem 1.4rem;
+      text-align: center;
+      color: #f9fafb;
+    }
+
+    .message-top {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.1rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.8rem;
+    }
+
+    .message-number-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      padding: 0.65rem 1rem;
+      border-radius: 999px;
+      background: #ffffff;
+      border: 5px solid #000;
+      box-shadow: 0 0 0 4px #fbbf24;
+      color: #000;
+      font-weight: 900;
+    }
+
+    .message-number-letter {
+      width: 58px;
+      height: 58px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #fef08a;
+      border: 4px solid #b45309;
+      color: #000;
+      font-size: 2rem;
+      font-weight: 900;
+    }
+
+    .message-number {
+      font-size: 3.2rem;
+      line-height: 1;
+      letter-spacing: 0.02em;
+    }
+
+    .message-name {
+      font-size: clamp(2.4rem, 4vw, 3rem);
+      font-weight: 900;
+      color: #fef08a;
+      text-shadow: 0 0 16px rgba(250, 250, 150, 0.9);
+      margin-bottom: 0.4rem;
+    }
+
+    .message-text {
+      font-size: clamp(1.6rem, 2.6vw, 2.1rem);
+      font-weight: 700;
+      line-height: 1.6;
+    }
+
+    .message-sub {
+      margin-top: 0.9rem;
+      font-size: 0.85rem;
+      color: #9ca3af;
+    }
+
+    .message-close-hint {
+      margin-top: 0.4rem;
+      font-size: 0.8rem;
+      color: #9ca3af;
+    }
+
     footer {
       text-align: center;
       font-size: 0.8rem;
@@ -351,7 +582,7 @@
 <body>
   <div class="wrap">
     <header>
-      <h1>ビンゴ番号コール</h1>
+      <h1>れんげの家ビンゴ大会</h1>
       <p>老人デイサービス・イベント向け｜画面を大きく表示してお使いください（F11 で全画面）</p>
     </header>
 
@@ -365,6 +596,11 @@
             <div class="current-main">
               <div class="current-number" id="currentNumber">--</div>
               <div class="current-sub" id="currentSub">まだ始まっていません</div>
+            </div>
+            <div class="side-encourage" aria-label="励ましメッセージ">
+              <div class="side-encourage-name" id="sideName">メッセージ</div>
+              <div class="side-encourage-text" id="sideText">下の欄に利用者さまの名前を入力して「名前リストを保存」を押してください。</div>
+              <div class="side-encourage-hint">新しい番号が出るたびに、ランダムで表示します。</div>
             </div>
           </div>
           <div class="info-row">
@@ -387,11 +623,9 @@
           </label>
           <div class="interval-options">
             間隔：
-            <label><input type="radio" name="interval" value="3" checked> 3秒</label>
-            <label><input type="radio" name="interval" value="5"> 5秒</label>
-            <label><input type="radio" name="interval" value="8"> 8秒</label>
-            <label><input type="radio" name="interval" value="10"> 10秒</label>
-            <span>（自動コール時）</span>
+            <input id="intervalSeconds" type="number" inputmode="decimal" min="1" max="60" step="0.5" value="5" aria-label="自動コール間隔（秒）">
+            <span class="unit">秒</span>
+            <span>（自動コール時・自由設定）</span>
           </div>
         </div>
       </section>
@@ -407,9 +641,41 @@
       </section>
     </div>
 
+    <!-- 利用者さま名前＆励ましメッセージ -->
+    <section class="panel names-panel">
+      <div class="names-panel-title">
+        <span>利用者さまの名前とメッセージ</span>
+        <small>名前を登録しておくと、ランダムに励ましの言葉を表示できます。</small>
+      </div>
+      <div class="names-row">
+        <textarea id="nameInput" placeholder="例）&#10;山田花子&#10;佐藤太郎&#10;鈴木一郎"></textarea>
+        <div class="names-actions">
+          <button class="btn-main btn-small" id="saveNamesBtn">名前リストを保存</button>
+          <button class="btn-positive btn-small" id="showMessageBtn">励ましメッセージを表示</button>
+          <div class="names-info" id="namesInfo">登録人数：0人</div>
+        </div>
+      </div>
+    </section>
+
     <footer>
       画面の明るさ・音量を調整して、ご利用者さまが見やすい・聞き取りやすい環境でお使いください。
     </footer>
+  </div>
+
+  <!-- メッセージ表示オーバーレイ -->
+  <div class="message-overlay" id="messageOverlay">
+    <div class="message-box">
+      <div class="message-top">
+        <div class="message-number-badge" aria-label="今回の番号">
+          <div class="message-number-letter" id="overlayLetter">-</div>
+          <div class="message-number" id="overlayNumber">--</div>
+        </div>
+        <div class="message-name" id="overlayName"></div>
+      </div>
+      <div class="message-text" id="overlayText"></div>
+      <div class="message-sub">みんなで拍手や声かけをお願いします。</div>
+      <div class="message-close-hint">画面のどこかをクリックすると閉じます。</div>
+    </div>
   </div>
 
   <script>
@@ -427,11 +693,97 @@
     const recentListEl = document.getElementById('recentList');
     const grid75El = document.getElementById('grid75');
 
+    // names & messages elements
+    const nameInput = document.getElementById('nameInput');
+    const saveNamesBtn = document.getElementById('saveNamesBtn');
+    const showMessageBtn = document.getElementById('showMessageBtn');
+    const namesInfoEl = document.getElementById('namesInfo');
+    const messageOverlay = document.getElementById('messageOverlay');
+    const overlayLetterEl = document.getElementById('overlayLetter');
+    const overlayNumberEl = document.getElementById('overlayNumber');
+    const overlayNameEl = document.getElementById('overlayName');
+    const overlayTextEl = document.getElementById('overlayText');
+    const sideNameEl = document.getElementById('sideName');
+    const sideTextEl = document.getElementById('sideText');
+
     const nextBtn = document.getElementById('nextBtn');
     const autoStartBtn = document.getElementById('autoStartBtn');
     const autoStopBtn = document.getElementById('autoStopBtn');
     const resetBtn = document.getElementById('resetBtn');
     const voiceToggle = document.getElementById('voiceToggle');
+    const intervalSecondsEl = document.getElementById('intervalSeconds');
+
+    let residentNames = [];
+
+    const messages = [
+      '{name}さん、今日も来てくださって本当にありがとうございます。',
+      '{name}さん、今日もご一緒できてとても嬉しいです。',
+      '{name}さん、ゆっくりで大丈夫です。みんな待っていますよ。',
+      '{name}さんの笑顔を見ると、まわりも明るくなります。',
+      '{name}さん、ここにいるだけで場の空気がやさしくなります。',
+      '{name}さん、無理をせず、ご自分のペースで楽しんでくださいね。',
+      '{name}さん、いつもお話を聞かせてくださってありがとうございます。',
+      '{name}さん、今日も参加してくださって、スタッフ一同とても励みになっています。',
+      '{name}さん、ゆっくり深呼吸して、一緒にリラックスしていきましょう。',
+      '{name}さんの頑張りを、みんながちゃんと見ていますよ。',
+      '{name}さん、今日も一緒に、楽しい時間を過ごしましょう。',
+      '{name}さん、少しずつで大丈夫です。一歩一歩いきましょうね。',
+      '{name}さん、ここは安心して過ごせる場所です。ゆっくりしてください。',
+      '{name}さん、いつも優しく声をかけてくださってありがとうございます。',
+      '{name}さん、今日も元気なお顔が見られてほっとしました。',
+      '{name}さん、疲れたらいつでも休んでくださいね。無理は禁物です。',
+      '{name}さん、昔のお話を聞くのを、みんな楽しみにしています。',
+      '{name}さん、今日も一緒に笑顔になれる時間をつくりましょう。',
+      '{name}さん、できることを、できる分だけで大丈夫ですよ。',
+      '{name}さん、あなたの存在が、ここにいるみんなの支えになっています。',
+      '{name}さん、今日のこの時間を、のんびり楽しみましょう。',
+      '{name}さん、いい調子です。そのままで大丈夫ですよ。',
+      '{name}さん、今日も来てくださって、心強いです。',
+      '{name}さん、声を聞けて嬉しいです。ありがとうございます。',
+      '{name}さん、焦らなくて大丈夫。ゆっくりいきましょう。',
+      '{name}さん、できたところまでで満点です。',
+      '{name}さん、今日も素敵な笑顔をありがとうございます。',
+      '{name}さん、みんなで一緒に楽しめるのが嬉しいです。',
+      '{name}さん、ここでは安心して、のびのびしてくださいね。',
+      '{name}さん、今日の目標は「楽しく過ごすこと」です。',
+      '{name}さん、ひと休みしながら、気楽にいきましょう。',
+      '{name}さん、今日もいらしてくださって、ありがとうございます。',
+      '{name}さん、お話の時間がとても楽しみです。',
+      '{name}さん、温かい雰囲気を作ってくださって感謝です。',
+      '{name}さん、ゆっくりでも確実に進んでいます。大丈夫です。',
+      '{name}さん、みんなの拍手が届いていますよ。',
+      '{name}さん、今日も一緒に笑いましょう。',
+      '{name}さん、がんばりすぎなくて大丈夫です。',
+      '{name}さん、できる範囲で十分です。素晴らしいです。',
+      '{name}さん、今日も来てくださって嬉しいです。ありがとうございます。',
+      '{name}さん、落ち着いていきましょう。ゆっくりで大丈夫。',
+      '{name}さん、ここはあなたのペースでOKです。',
+      '{name}さん、みんなの仲間です。安心してくださいね。',
+      '{name}さん、今日はいい一日になりそうですね。',
+      '{name}さん、きっと大丈夫。応援しています。',
+      '{name}さん、今日も笑顔の時間を増やしましょう。',
+      '{name}さん、ゆっくり息をして、肩の力を抜きましょう。',
+      '{name}さん、ここに来てくださるだけで嬉しいです。',
+      '{name}さん、あなたの優しさに助けられています。',
+      '{name}さん、今日も一緒に、穏やかな時間を過ごしましょう。',
+      '{name}さん、ゆっくりでOK。ひとつずついきましょう。',
+      '{name}さん、今日もいいペースです。素晴らしいです。',
+      '{name}さん、今のままで十分です。安心してください。',
+      '{name}さん、参加してくださってありがとうございます。嬉しいです。',
+      '{name}さん、あなたの笑顔は、みんなの元気のもとです。',
+      '{name}さん、静かに深呼吸。ゆったりいきましょう。',
+      '{name}さん、今日も楽しい思い出を一つ増やしましょう。',
+      '{name}さん、いつもありがとうございます。今日もよろしくお願いします。',
+      '{name}さん、穏やかに、気持ちよく過ごしましょう。',
+      '{name}さん、良いところがたくさんあります。素敵です。',
+      '{name}さん、今日もここに来てくれて嬉しいです。',
+      '{name}さん、笑っても、休んでも、どちらも大切です。',
+      '{name}さん、あなたのペースが一番です。安心していきましょう。',
+      '{name}さん、今日も一緒に、のんびり楽しみましょう。',
+      '{name}さん、みんなの応援がついていますよ。',
+      '{name}さん、ここは安心できる場所です。ゆっくりどうぞ。',
+      '{name}さん、今日も素敵な時間をありがとうございます。'
+    ];
 
     function getLetter(num) {
       if (num >= 1 && num <= 15) return 'B';
@@ -536,15 +888,16 @@
       updateRecentList();
       updateGridHighlight();
       speakNumber(num);
+      // 新しい番号が出たタイミングで、番号の横に励ましメッセージを表示
+      updateSideEncouragement();
     }
 
     function startAuto() {
       if (autoTimer || remaining.length === 0) return;
-      const intervalRadios = document.querySelectorAll('input[name="interval"]');
-      let sec = 5;
-      intervalRadios.forEach(r => {
-        if (r.checked) sec = Number(r.value) || 5;
-      });
+      let sec = Number(intervalSecondsEl?.value);
+      if (!Number.isFinite(sec) || sec <= 0) sec = 5;
+      if (sec < 1) sec = 1;
+      if (sec > 60) sec = 60;
       drawNext();
       autoTimer = setInterval(() => {
         if (remaining.length === 0) {
@@ -595,6 +948,70 @@
 
     resetBtn.addEventListener('click', () => {
       resetAll();
+    });
+
+    // 名前リスト保存
+    function saveNames() {
+      const raw = (nameInput.value || '').split(/\r?\n/);
+      residentNames = raw
+        .map(s => s.trim())
+        .filter(s => s.length > 0);
+      namesInfoEl.textContent = '登録人数：' + residentNames.length + '人';
+    }
+
+    saveNamesBtn.addEventListener('click', () => {
+      saveNames();
+    });
+
+    // 励ましメッセージ表示
+    function pickEncouragement() {
+      if (!residentNames.length) {
+        saveNames();
+      }
+      if (!residentNames.length) return null;
+      const name = residentNames[Math.floor(Math.random() * residentNames.length)];
+      const msgTemplate = messages[Math.floor(Math.random() * messages.length)];
+      const text = msgTemplate.replace('{name}', name);
+      return { name, text };
+    }
+
+    function updateSideEncouragement() {
+      const picked = pickEncouragement();
+      if (!picked) {
+        sideNameEl.textContent = 'メッセージ';
+        sideTextEl.textContent = '下の欄に利用者さまの名前を入力して「名前リストを保存」を押してください。';
+        return;
+      }
+      sideNameEl.textContent = picked.name + 'さん';
+      sideTextEl.textContent = picked.text;
+    }
+
+    function showEncouragement() {
+      const picked = pickEncouragement();
+      if (!picked) {
+        alert('まず左の枠に利用者さまの名前を入力してください。');
+        return;
+      }
+      // 今回の番号も表示（drawNext() から呼ばれる想定）
+      if (typeof current === 'number') {
+        overlayLetterEl.textContent = getLetter(current);
+        overlayNumberEl.textContent = String(current);
+      } else {
+        overlayLetterEl.textContent = '-';
+        overlayNumberEl.textContent = '--';
+      }
+      overlayNameEl.textContent = picked.name + 'さん';
+      overlayTextEl.textContent = picked.text;
+      messageOverlay.classList.add('active');
+    }
+
+    showMessageBtn.addEventListener('click', () => {
+      showEncouragement();
+    });
+
+    // オーバーレイをクリックで閉じる
+    messageOverlay.addEventListener('click', () => {
+      messageOverlay.classList.remove('active');
     });
 
     // 初期化
