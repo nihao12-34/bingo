@@ -790,13 +790,11 @@
       return 'O';
     }
 
-    function speakNumber(num) {
+    function speakJa(text) {
       if (!('speechSynthesis' in window)) return;
       if (!voiceToggle.checked) return;
       try {
         window.speechSynthesis.cancel();
-        // 利用者さまが聞き取りやすいよう、番号だけをシンプルに読む
-        const text = `${num}番`;
         const u = new SpeechSynthesisUtterance(text);
         const voices = window.speechSynthesis.getVoices();
         const ja = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('ja'));
@@ -808,6 +806,11 @@
       } catch (e) {
         // ignore
       }
+    }
+
+    function speakNumber(num) {
+      // 利用者さまが聞き取りやすいよう、番号だけをシンプルに読む
+      speakJa(`${num}番`);
     }
 
     function shuffle(arr) {
@@ -983,6 +986,10 @@
       }
       sideNameEl.textContent = picked.name + 'さん';
       sideTextEl.textContent = picked.text;
+      // 番号のあとに励ましメッセージも読み上げる（2秒あける）
+      setTimeout(() => {
+        speakJa(picked.text);
+      }, 2000);
     }
 
     function showEncouragement() {
